@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pickle
 
-from EtoC import EtoC
+from functions import EtoC
 
 
 # Specify the filename of the pickle file

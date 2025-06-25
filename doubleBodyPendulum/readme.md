@@ -24,9 +24,16 @@ $ python3 plot3dHoppingRover.py       #hopping rover向けの描画
 # plot3dRigidbody.py
 * 結果を ode_result.pkl から読み込み、３次元のアニメーションを描写
 
-# EtoC.py
-* オイラーパラメタから方向余弦行列（座標変換行列）を作成
 
-# Ang2E.py
-* Z'X'Zのオイラー角から、相当するオイラーパラメタを生成
-* 計算の初期値作成などにつかう
+# functions.py
+計算に必要な関数をまとめたもの。
+mainの関数からインポートして使用する。
+
+|Name|Function|
+|---|---|
+|EtoC|オイラーパラメタから方向余弦行列（座標変換行列）を作成|
+|EtoS|EtoC の計算用のための中間変数|
+|TILDE|外積計算用のオペレータ|
+|Ang2E|$Z'X'Z$のオイラー角から、相当するオイラーパラメタ$E$を生成 <br> 計算の初期値作成などにつかう|
+
+

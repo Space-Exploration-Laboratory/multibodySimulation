@@ -6,9 +6,10 @@ from scipy import linalg
 from scipy.integrate import solve_ivp
 import pickle
 
-import EtoC
-import EtoS
-import TILDE
+from functions import EtoS
+from functions import EtoC
+from functions import TILDE
+from functions import Ang2E
 
 
 # 剛体Aの慣性行列
@@ -42,29 +43,29 @@ def func_eom(t, X):
     Omega_OA = np.array([[X[10]],[X[11]],[X[12]]]).reshape(3,1)
 
     # 座標変換行列の作成
-    C_OA = EtoC.EtoC(E_OA)
+    C_OA = EtoC(E_OA)
 
     # 拘束条件式 (Ψ：位置レベル、Φ：速度レベル)
     PSI = R_OA + C_OA @ r_AP1
-    PHI = V_OA - C_OA @ TILDE.TILDE(r_AP1) @ Omega_OA
+    PHI = V_OA - C_OA @ TILDE(r_AP1) @ Omega_OA
  
     # 速度拘束条件の速度ベクトルV_OAによる変微分（V_OBが登場する場合、PHI_V_OBも用意する必要がある）
     PHI_V_OA = np.diag([1, 1, 1])
     # 速度拘束条件の角速度ベクトルOmega_OAによる変微分
-    PHI_Omega_OA = -C_OA @ TILDE.TILDE(r_AP1)
+    PHI_Omega_OA = -C_OA @ TILDE(r_AP1)
 
     # 速度レベルの拘束条件の、全ての速度ベクトルによる変微分結果を横に並べた行列
     PHI_V = np.hstack((PHI_V_OA, PHI_Omega_OA))
 
     # 速度ベクトルの拘束条件式の、時間微分の式におけるd/dt V, d/dt Omega に関わらない項
     # Φの時間微分(Ψの時間での2階微分)を作ると、右辺= 〇〇 * dV/dt + △△ * dOmega/dt + □□　の形で表現できる。この □□ が "dPHI_R"
-    dPHI_R = -C_OA @ TILDE.TILDE(Omega_OA) @ TILDE.TILDE(r_AP1) @ Omega_OA
+    dPHI_R = -C_OA @ TILDE(Omega_OA) @ TILDE(r_AP1) @ Omega_OA
 
     # 剛体Aに作用する、世界座標系で見た外力のベクトル(ここでは重力加速度による力)
     F_OA = np.array([[0.0], [0.0], [-M_A * g]])
     # 剛体Aに作用する "剛体座標系" で見たトルクベクトル（回転に関する項は、剛体固定座標系で見るため）。
     # 第1項：任意の作用トルク（ここではゼロ、重力は重心に作用するのでトルクは生じない）、第2項：減衰のトルク(ここではゼロ)、第3項：オイラーの方程式の右辺の項 　
-    N_OA = np.array([[0.0], [0.0 ], [0.0]]) + (-C_friction) * Omega_OA - TILDE.TILDE(Omega_OA) @ J_A @ Omega_OA
+    N_OA = np.array([[0.0], [0.0 ], [0.0]]) + (-C_friction) * Omega_OA - TILDE(Omega_OA) @ J_A @ Omega_OA
 
     # 全ての外力、外トルクを合わせたベクトル。
     # OB, OCがいる時は、F=np.vstack((F_OA, N_OA, F_OC, N_OC, F_OC, N_OC)), あるいは、F=np.vstack((F_OA, F_OB, F_OC, N_OA, N_OB, N_OC))
@@ -78,7 +79,7 @@ def func_eom(t, X):
     
     #Lambdaの求め方その２（上ではPHIを１つのブロックにまとめている。まとめるかどうかの違いだけ）
     Lambda = np.linalg.solve((PHI_V_OA @ inv_M_A @ PHI_V_OA.T + PHI_Omega_OA @ inv_J_A @ PHI_Omega_OA.T),\
-                              PHI_V_OA @ inv_M_A @ F_OA + PHI_Omega_OA @ inv_J_A @ (-TILDE.TILDE(Omega_OA) @ J_A @ Omega_OA) \
+                              PHI_V_OA @ inv_M_A @ F_OA + PHI_Omega_OA @ inv_J_A @ (-TILDE(Omega_OA) @ J_A @ Omega_OA) \
                                 + dPHI_R )
     
     # 状態変数の微分、運動方程式の加速度に相当する項。
@@ -87,7 +88,7 @@ def func_eom(t, X):
     # オイラーパラメタの時間微分
     # 姿勢表現にオイラー角を用いる場合は、ここにオイラー角の時間微分の式が入る
     # オイラーパラメタ、オイラー角、どちらを用いる場合でも、姿勢は角速度ベクトルを単に積分するだけではもとまらないことが超重要である。
-    dE_OA = 0.5 * EtoS.EtoS(E_OA).T @ Omega_OA - 1/2/10 *E_OA @ (1-1/(E_OA.T @ E_OA))
+    dE_OA = 0.5 * EtoS(E_OA).T @ Omega_OA - 1/2/10 *E_OA @ (1-1/(E_OA.T @ E_OA))
 
     # return する変数の作成。前２つは、状態方程式の速度の微分の項。後ろのdVが、加速度の項（2階微分の項）
     DX = np.vstack((V_OA, dE_OA, dV))

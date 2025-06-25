@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pickle
 
-from EtoC import EtoC
+from functions import EtoC
 
 
 # Specify the filename of the pickle file
@@ -47,18 +47,19 @@ faces = np.array([[0, 1, 3, 2],
                   [2, 3, 7, 6],
                   [4, 6, 7, 5]])
 
-xG = 0.5
-yG = 0.5
-vertsG = np.array([[-xG, -yG, 0],[-xG, yG, 0],[xG, yG, 0], [xG, -yG, 0]])
+
+# Set the limits of the plot
+xlim = (-0.5, 0.5)
+ylim = (-1, 0.5)
+zlim = (-0.2, 1)
+
+
+vertsG = np.array([[xlim[0], ylim[0], 0],[xlim[0], ylim[1], 0],[xlim[1], ylim[1], 0], [xlim[1], ylim[0], 0]])
 facesG = np.array([[0,1,2,3]])
 
 # Define the color of each face
 colors = ['blue', 'green', 'red', 'yellow', 'orange', 'purple']
 
-# Set the limits of the plot
-xlim = (-0.5, 0.5)
-ylim = (-0.5, 0.5)
-zlim = (-0.2, 1)
 
 # Set up the figure and axes
 fig = plt.figure()
@@ -66,9 +67,10 @@ ax = fig.add_subplot(111, projection='3d')
 ax.axis('equal')
 
 # Plot the initial cube
+faceG = Poly3DCollection(vertsG[facesG], facecolors='cyan', linewidths=1, edgecolors='r', alpha=0.5)
+
 cubeA = Poly3DCollection(vertsA[faces], facecolors=colors, alpha=0.25)
 cubeB = Poly3DCollection(vertsB[faces], facecolors=colors, alpha=0.25)
-faceG = Poly3DCollection(vertsG[facesG], facecolors='cyan', linewidths=1, edgecolors='r', alpha=0.5)
 ax.add_collection3d(faceG)
 
 ax.add_collection(cubeA)
@@ -123,7 +125,7 @@ def rotate(i):
 # Set up the animation
 total_frames = len(E1A)
 ani = FuncAnimation(fig, rotate, frames=total_frames, interval=16.6)
-ax.set_box_aspect((1, 1, 1))
+ax.set_box_aspect((xlim[1]-xlim[0], ylim[1]-ylim[0], zlim[1]-zlim[0]))
 
 # Show the animation
 plt.show()

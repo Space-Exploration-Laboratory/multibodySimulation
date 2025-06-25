@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pickle
 
-from EtoC import EtoC
+from functions import EtoC
 
 
 # Specify the filename of the pickle file
@@ -51,8 +51,8 @@ faces = np.array([[0, 1, 3, 2],
 colors = ['blue', 'green', 'red', 'yellow', 'orange', 'purple']
 
 # Set the limits of the plot
-xlim = (-1, 1)
-ylim = (-1, 1)
+xlim = (-2, 2)
+ylim = (-2, 2)
 zlim = (-4, 1)
 
 # Set up the figure and axes
@@ -117,7 +117,7 @@ def rotate(i):
 # Set up the animation
 total_frames = len(E1A)
 ani = FuncAnimation(fig, rotate, frames=total_frames, interval=16.6)
-ax.set_box_aspect((1, 1, 1))
+ax.set_box_aspect((xlim[1]-xlim[0], ylim[1]-ylim[0], zlim[1]-zlim[0]))
 
 # Show the animation
 plt.show()

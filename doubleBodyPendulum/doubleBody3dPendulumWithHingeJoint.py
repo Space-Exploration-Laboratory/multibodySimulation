@@ -6,7 +6,10 @@ from scipy import linalg
 from scipy.integrate import solve_ivp
 import pickle
 #from scipy.linalg import block_diag
-
+from functions import EtoS
+from functions import EtoC
+from functions import TILDE
+from functions import Ang2E
 
 # 剛体Aの慣性行列
 J_A = np.array([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 2.0]])
@@ -52,44 +55,6 @@ inv_J_B = np.linalg.inv(J_B)
 inv_M_matrix = linalg.block_diag(inv_M_A, inv_J_A, inv_M_B, inv_J_B)
 print(inv_M_matrix)
 
-# オイラーパラメタから、座標変換行列(方向余弦行列)への変換関数
-def EtoC(E):
-    # Euler parameters
-    E = E.reshape(4,)
-    E1 = E[0]
-    E2 = E[1]
-    E3 = E[2]
-    E4 = E[3]
-    # Direction Cosine Matrix (DCM)
-    C = np.array([[E2**2 - E3**2 - E4**2 + E1**2, 2 * (E2 * E3 - E4 * E1), 2 * (E4 * E2 + E3 * E1)],
-                  [2 * (E2 * E3 + E4 * E1), E3**2 - E4**2 - E2**2 + E1**2, 2 * (E3 * E4 - E2 * E1)],
-                  [2 * (E4 * E2 - E3 * E1), 2 * (E3 * E4 + E2 * E1), E4**2 - E2**2 - E3**2 + E1**2]])
-    C = C.reshape(3,3)
-    return C
-
-# オイラーパラメタの時間微分の計算に用いる中間変数Sの作成用の関数
-def EtoS(E):
-    # Euler parameters
-    E0 = E[0]
-    E1 = E[1]
-    E2 = E[2]
-    E3 = E[3]
-    # Skew-symmetric matrix (S)
-    S = np.array([[-E1, E0, E3, -E2],
-                  [-E2, -E3, E0, E1],
-                  [-E3, E2, -E1, E0]])
-    S = S.reshape(3,4)
-    return S
-
-# 外積計算ようのチルダ演算子
-def TILDE(A):
-    # Tilde operator
-    A = A.reshape(3,)
-    TildeA = np.array([[0, -A[2], A[1]],
-                      [A[2], 0, -A[0]],
-                      [-A[1], A[0], 0]])
-    TildeA = TildeA.reshape(3,3)
-    return TildeA
 
 # 運動方程式、一階の常微分方程式の形、すなわち状態方程式形式で表現する。左辺が返り値
 def func_eom(t, X):

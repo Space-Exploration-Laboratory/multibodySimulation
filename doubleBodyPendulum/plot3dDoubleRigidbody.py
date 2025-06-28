@@ -121,3 +121,7 @@ ax.set_box_aspect((xlim[1]-xlim[0], ylim[1]-ylim[0], zlim[1]-zlim[0]))
 
 # Show the animation
 plt.show()
+
+# Save the animation as an MP4 file
+ani.save("doubleRigidBodyPendulum.mp4", writer='ffmpeg', fps=60)
+print("Animation saved as 'doubleRigidBodyPendulum.mp4'")

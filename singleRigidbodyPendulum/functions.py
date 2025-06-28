@@ -1,6 +1,9 @@
 import numpy as np
 
-# Eular angle (ZXZ) から Eular Palameter を生成
+# 計算に必要な関数の定義ファイル
+# main関数側で必要なものをインポートして使用する
+
+# Euler angle (ZXZ) から Euler Palameter を生成
 def Ang2E(a):
     c1 = np.cos(a[0])
     c2 = np.cos(a[1])
@@ -76,3 +79,31 @@ def TILDE(A):
     return TildeA
 
 
+
+# Euler parameters to Z-X-Z Euler angles
+def E2Ang_ZXZ(E):
+    # Normalize quaternion
+    E = E.flatten()
+    q0, q1, q2, q3 = E[0], E[1], E[2], E[3]
+    norm = np.linalg.norm(E)
+    q0, q1, q2, q3 = q0/norm, q1/norm, q2/norm, q3/norm
+
+    # Convert quaternion to DCM
+    dcm = np.array([
+        [1 - 2*(q2**2 + q3**2),     2*(q1*q2 - q0*q3),       2*(q1*q3 + q0*q2)],
+        [2*(q1*q2 + q0*q3),         1 - 2*(q1**2 + q3**2),   2*(q2*q3 - q0*q1)],
+        [2*(q1*q3 - q0*q2),         2*(q2*q3 + q0*q1),       1 - 2*(q1**2 + q2**2)]
+    ])
+
+    # Extract ZXZ Euler angles from DCM
+    if abs(dcm[2,2]) < 1.0:
+        theta_1 = np.arccos(dcm[2,2])
+        theta_2 = np.arctan2(dcm[0,2], -dcm[1,2])
+        theta_3 = np.arctan2(dcm[2,0], dcm[2,1])
+    else:
+        # Gimbal lock case (beta = 0 or pi)
+        theta_1 = 0 if dcm[2,2] > 0 else np.pi
+        theta_2 = 0
+        theta_3 = np.arctan2(-dcm[0,1], dcm[0,0])
+
+    return np.array([theta_1, theta_2, theta_3])

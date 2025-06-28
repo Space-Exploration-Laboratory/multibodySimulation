@@ -409,3 +409,7 @@ Temporary Items
 
 
 
+# results
+*.pkl
+*.mp4
+*.png

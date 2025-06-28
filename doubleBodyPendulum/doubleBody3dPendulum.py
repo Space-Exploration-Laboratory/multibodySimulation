@@ -9,6 +9,7 @@ import pickle
 from functions import EtoS
 from functions import EtoC
 from functions import TILDE
+from functions import E2Ang_ZXZ
 from functions import Ang2E
 
 # 剛体Aの慣性行列

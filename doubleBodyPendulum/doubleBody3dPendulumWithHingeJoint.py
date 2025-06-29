@@ -32,7 +32,7 @@ r_AP2 = np.array([[0.0], [0.0], [-1.0]])
 r_BP1 = np.array([[0.0], [0.0], [1.0]])
 
 #ヒンジの軸の方向ベクトル
-n_O = np.array([1, 0, 1]).reshape(3,1) 
+n_O = np.array([1, 0, 0]).reshape(3,1) 
 # 【 重 要 】
 # 下で記した初期条件と一致させるなら、本来はここは[1; 0; 0]でなくてはならない
 # しかし、ピンジョイントの動きを説明するため、あえて初期条件と整合しない拘束条件を設けている
@@ -73,9 +73,13 @@ def func_eom(t, X):
     C_OB = EtoC(E_OB)
 
     # 拘束条件式 (Ψ：位置レベル、Φ：速度レベル)
+    # 天井と剛体Aの位置拘束（原点〜A上の点AP1）
     PSI1 =  R_OA + C_OA @ r_AP1
+    # 剛体Aと剛体Bの位置拘束（A上の点AP2〜B上の点BP1）
     PSI2 = (R_OA + C_OA @ r_AP2) - (R_OB + C_OB @ r_BP1) 
+    # 天井のヒンジベクトルn_0と、剛体Aのヒンジベクトルn_Aの向きが一致する拘束(内積＝0)
     PSI3 = TILDE(C_OA @ n_A) @ (n_O)
+    # 剛体Aのヒンジベクトルn_Aと、剛体Bのヒンジベクトルn_Bの向きが一致する拘束(内積＝0)
     PSI4 = TILDE(C_OA @ n_A) @ (C_OB @ n_B)
     PSI = np.vstack((PSI1,PSI2,PSI3,PSI4))
 
@@ -179,8 +183,8 @@ if (__name__ == '__main__'):
     # 剛体の位置ベクトル、姿勢(オイラーパラメタ)、速度、角速度ベクトルの、「初期値」を定義する
     R_A_init     = np.array([0.0, 0.0,-1.0]).reshape(3,1) 
     E_A_init     = np.array([1.0, 0.0, 0.0, 0.0]).reshape(4,1)
-    V_A_init     = np.array([0.0, 5.0, 0.0]).reshape(3,1)
-    Omega_A_init = np.array([5.0, 0.0, 0.0]).reshape(3,1)
+    V_A_init     = np.array([0.0, 0.0, 0.0]).reshape(3,1)
+    Omega_A_init = np.array([0.0, 0.0, 0.0]).reshape(3,1)
     R_B_init     = np.array([0.0, 0.0, -3.0]).reshape(3,1) 
     E_B_init     = np.array([1.0, 0.0, 0.0, 0.0]).reshape(4,1)
     V_B_init     = np.array([0.0, 5.0, 0.0]).reshape(3,1)

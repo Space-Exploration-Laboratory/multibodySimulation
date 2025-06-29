@@ -130,8 +130,8 @@ def func_eom(t, X):
     dPHI_R_row1 = -C_OA @ TILDE(Omega_OA) @ TILDE(r_AP1) @ Omega_OA
     dPHI_R_row2 = -C_OA @ TILDE(Omega_OA) @ TILDE(r_AP2) @ Omega_OA  - (-C_OB @ TILDE(Omega_OB) @ TILDE(r_BP1) @ Omega_OB)
     dPHI_R_row3 = ( -tilde_n_O @ (-dC_OA) @  tilde_n_O ) @ Omega_OA
-    dPHI_R_row4 = (-dC_OB @ tilde_n_B @ C_OB.T @ (-C_OA) @ tilde_n_A  +  (-C_OB) @ tilde_n_B @ dC_OB.T @ (-C_OA) @ tilde_n_A  +  (-C_OB) @ tilde_n_B @ C_OB.T @ (-dC_OA.T) @ tilde_n_A ) @ Omega_OA \
-                 +( dC_OA @ tilde_n_A @ C_OA.T @ (-C_OB) @ tilde_n_B  +  ( C_OA) @ tilde_n_A @ dC_OA.T @ (-C_OB) @ tilde_n_B  +  ( C_OA) @ tilde_n_A @ C_OA.T @ (-dC_OB.T) @ tilde_n_B ) @ Omega_OB
+    dPHI_R_row4 = (-dC_OB @ tilde_n_B @ C_OB.T @ (-C_OA) @ tilde_n_A  +  (-C_OB) @ tilde_n_B @ dC_OB.T @ (-C_OA) @ tilde_n_A  +  (-C_OB) @ tilde_n_B @ C_OB.T @ (-dC_OA) @ tilde_n_A ) @ Omega_OA \
+                 +( dC_OA @ tilde_n_A @ C_OA.T @ (-C_OB) @ tilde_n_B  +  ( C_OA) @ tilde_n_A @ dC_OA.T @ (-C_OB) @ tilde_n_B  +  ( C_OA) @ tilde_n_A @ C_OA.T @ (-dC_OB) @ tilde_n_B ) @ Omega_OB
     dPHI_R = np.vstack((dPHI_R_row1, dPHI_R_row2, dPHI_R_row3, dPHI_R_row4))
     
     # 剛体Aに作用する、世界座標系で見た外力のベクトル(ここでは重力加速度による力)
